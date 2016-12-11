@@ -1,0 +1,4 @@
+aiccu_username: "username-SIXXS"
+aiccu_password: "password"
+aiccu_tunnel: "TXXXX" # optional
+ipv6_prefix: "2001:xxxx:xxxx:xxxx"

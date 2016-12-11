@@ -1,0 +1,40 @@
+---
+
+- name: Configure the Cubiaboard
+  hosts: localhost
+  vars_files:
+     - vars.yaml
+  tasks:
+
+  - name: insert/update eth0 configuration stanza in /etc/network/interfaces
+    blockinfile:
+      dest: /etc/network/interfaces
+      block: |
+        iface eth0 inet6 static
+          address {{ipv6_prefix}}::1
+          netmask 64
+
+  - name: set IPv6 forwarding
+    sysctl:
+      name:  net.ipv6.conf.all.forwarding
+      value: 1
+      sysctl_set: yes
+      state: present
+      reload: yes
+
+  - name: Install radvd package
+    apt:
+      name: 'radvd'
+      state: 'latest'
+      install_recommends: False
+
+  - name: configure radvd
+    template: src=radvd.conf.j2 dest=/etc/radvd.conf
+    notify: restart radvd
+
+  handlers:
+  - name: restart radvd
+    service: name=radvd state=restarted
+
+  roles:
+    - role: aiccu
